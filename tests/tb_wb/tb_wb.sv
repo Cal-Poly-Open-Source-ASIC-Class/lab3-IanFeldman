@@ -51,19 +51,29 @@ initial begin
 end
 
 initial begin
-    // Test Goes Here
+    /* init signals */
     clk = 0;
-
-    #CLK_PERIOD
-
-    /* try reading from A */
-    pA_wb_cyc_i = 1'b1;
-    pA_wb_stb_i = 1'b1;
+    /* port a */
+    pA_wb_cyc_i = 1'b0;
+    pA_wb_stb_i = 1'b0;
     pA_wb_we_i = 4'b0;
     pA_wb_addr_i = `A_WIDTH'b0;
-
+    /* port b */
+    pB_wb_cyc_i = 1'b0;
+    pB_wb_stb_i = 1'b0;
+    pB_wb_we_i = 4'b0;
+    pB_wb_addr_i = `A_WIDTH'b0;
     #CLK_PERIOD
+    /* attempt reading from A */
+    pA_wb_cyc_i = 1'b1;
+    pA_wb_stb_i = 1'b1;
+    #CLK_PERIOD
+    /* attem[t reading from B */
     pA_wb_cyc_i = 1'b0;
+    pA_wb_stb_i = 1'b0;
+    pB_wb_cyc_i = 1'b1;
+    pB_wb_stb_i = 1'b1;
+    #CLK_PERIOD
 
     #1000000
 

@@ -21,14 +21,19 @@ logic en_0, en_1;
 logic [31:0] di_0, di_1, do_0, do_1;
 logic [(`A_WIDTH_RAM - 1):0] a_0, a_1; /* 8 bits */
 
-/* temp signals */
+/* various signals */
 logic pA_ack, pB_ack;
-
+logic pA_stall, pB_stall;
+logic pA_turn, pB_turn;
 logic pA_ram, pB_ram, pA_en, pB_en;
+logic contention, temp_A, temp_B;
+
 assign pA_ram = {pA_wb_addr_i >> (`A_WIDTH - 1)}[0];
 assign pB_ram = {pB_wb_addr_i >> (`A_WIDTH - 1)}[0];
 assign pA_en = pA_wb_cyc_i & pA_wb_stb_i;
 assign pB_en = pB_wb_cyc_i & pB_wb_stb_i;
+assign pB_turn = ~pA_turn;
+assign contention = pA_en & pB_en & ~(pA_ram ^ pB_ram);
 
 DFFRAM256x32 ram_0
 (
@@ -52,27 +57,27 @@ DFFRAM256x32 ram_1
 
 always_comb begin
     /* both ports active */
-    if (pA_en & pB_en) begin
-        /* TEMP */
-        we_0 = 4'b0;
-        en_0 = 1'b0;
-        di_0 = 32'b0;
-        a_0  = `A_WIDTH_RAM'b0;
-        we_1 = 4'b0;
-        en_1 = 1'b0;
-        di_1 = 32'b0;
-        a_1  = `A_WIDTH_RAM'b0;
-        pA_ack = 1'b0;
-        pB_ack = 1'b0;
-        pA_wb_data_o = 32'b0;
-        pB_wb_data_o = 32'b0;
+    if (contention) begin
+        /* Port A's turn */
+        if (pA_turn == 1'b1) begin
+            pA_stall = 1'b0;
+            pB_stall = 1'b1;
+        end
+        /* Port B's turn */
+        else begin
+            pA_stall = 1'b1;
+            pB_stall = 1'b0;
+        end
     end
     /* only port a */
-    else if (pA_en) begin
+    if ((pA_en & ~contention) | (contention & pA_turn)) begin
+        /* set stall again to suppress latch warning */
+        pA_stall = 1'b0;
+        pB_stall = 1'b1;
         if (pA_ram == 1'b0) begin
             /* enable ram0 signals */
             we_0 = pA_wb_we_i;
-            en_0 = pA_en;
+            en_0 = pA_en & ~pA_stall;
             di_0 = pA_wb_data_i;
             a_0  = pA_wb_addr_i[(`A_WIDTH_RAM - 1):0];
             pA_wb_data_o = do_0;
@@ -85,7 +90,7 @@ always_comb begin
         else begin
             /* enable ram1 signals */
             we_1 = pA_wb_we_i;
-            en_1 = pA_en;
+            en_1 = pA_en & ~pA_stall;
             di_1 = pA_wb_data_i;
             a_1  = pA_wb_addr_i[(`A_WIDTH_RAM - 1):0];
             pA_wb_data_o = do_1;
@@ -101,11 +106,14 @@ always_comb begin
         pB_wb_data_o = 32'b0;
     end
     /* only port b */
-    else if (pB_en) begin
+    if ((pB_en & ~contention) | (contention & pB_turn)) begin
+        /* set stall again to suppress latch warning */
+        pA_stall = 1'b1;
+        pB_stall = 1'b0;
         if (pB_ram == 1'b0) begin
             /* enable ram0 signals */
             we_0 = pB_wb_we_i;
-            en_0 = pB_en;
+            en_0 = pB_en & ~pB_stall;
             di_0 = pB_wb_data_i;
             a_0  = pB_wb_addr_i[(`A_WIDTH_RAM - 1):0];
             pB_wb_data_o = do_0;
@@ -118,7 +126,7 @@ always_comb begin
         else begin
             /* enable ram1 signals */
             we_1 = pB_wb_we_i;
-            en_1 = pB_en;
+            en_1 = pB_en & ~pB_stall;
             di_1 = pB_wb_data_i;
             a_1  = pB_wb_addr_i[(`A_WIDTH_RAM - 1):0];
             pB_wb_data_o = do_1;
@@ -150,12 +158,25 @@ always_comb begin
         /* set data out to zero */
         pA_wb_data_o = 32'b0;
         pB_wb_data_o = 32'b0;
+        /* set turns and stalls to 0 */
+        pA_stall = 1'b0;
+        pB_stall = 1'b0;
     end
 end
 
 always_ff@(negedge clk) begin
-    pA_wb_ack_o <= pA_ack;
-    pB_wb_ack_o <= pB_ack;
+    /* clock in ack */
+    temp_A <= pA_ack;
+    temp_B <= pB_ack;
+    pA_wb_ack_o <= temp_A;
+    pB_wb_ack_o <= temp_B;
+    /* clock in stall */
+    pA_wb_stall_o <= pA_stall;
+    pB_wb_stall_o <= pB_stall;
+    /* update turns */
+    if (pA_en & pB_en) begin
+        pA_turn <= ~pA_turn;
+    end
 end
 
 endmodule
