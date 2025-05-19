@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 `define A_WIDTH 9
 
-module tb_fib;
+module tb_wb;
 
 // Declare test variables
 logic clk;
@@ -61,6 +61,9 @@ initial begin
     pA_wb_stb_i = 1'b1;
     pA_wb_we_i = 4'b0;
     pA_wb_addr_i = `A_WIDTH'b0;
+
+    #CLK_PERIOD
+    pA_wb_cyc_i = 1'b0;
 
     #1000000
 

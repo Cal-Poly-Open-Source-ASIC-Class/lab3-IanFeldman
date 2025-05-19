@@ -154,15 +154,8 @@ always_comb begin
 end
 
 always_ff@(negedge clk) begin
-    /* enable ack for one clock */
-    if (pA_ack == 1'b1)
-        pA_wb_ack_o <= 1'b1;
-    if (pB_ack == 1'b1)
-        pB_wb_ack_o <= 1'b1;
-    if (pA_wb_ack_o == 1'b1)
-        pA_wb_ack_o <= 1'b0;
-    if (pB_wb_ack_o == 1'b1)
-        pB_wb_ack_o <= 1'b0;
+    pA_wb_ack_o <= pA_ack;
+    pB_wb_ack_o <= pB_ack;
 end
 
 endmodule
