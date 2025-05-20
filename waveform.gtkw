@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.4.0 (w)1999-2022 BSI
-[*] Mon May 19 20:46:47 2025
+[*] Tue May 20 03:20:48 2025
 [*]
 [dumpfile] "/home/asic/workspace/lab3-IanFeldman/tests/tb_wb/tb_wb.vcd"
-[dumpfile_mtime] "Mon May 19 20:45:16 2025"
-[dumpfile_size] 3381141
+[dumpfile_mtime] "Tue May 20 00:20:34 2025"
+[dumpfile_size] 261465
 [savefile] "/home/asic/workspace/lab3-IanFeldman/waveform.gtkw"
-[timestart] 50
+[timestart] 0
 [size] 1680 957
 [pos] -1 -1
-*-14.000000 9830 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+*-14.000000 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
 [markername] AA
 [markername] BB
 [markername] CC
@@ -37,20 +37,26 @@
 [markername] YY
 [markername] ZZ
 [treeopen] tb_wb.
+[treeopen] tb_wb.wb.
 [sst_width] 276
-[signals_width] 197
+[signals_width] 274
 [sst_expanded] 1
 [sst_vpaned_height] 275
 @28
 tb_wb.clk
+tb_wb.wb.en_0
+tb_wb.wb.en_1
 @200
+-
 -PORT A
 @28
 tb_wb.pA_wb_cyc_i
 tb_wb.pA_wb_stb_i
 @22
 tb_wb.pA_wb_addr_i[8:0]
+@23
 tb_wb.pA_wb_data_i[31:0]
+@22
 tb_wb.pA_wb_we_i[3:0]
 @28
 tb_wb.pA_wb_ack_o
@@ -72,5 +78,25 @@ tb_wb.pB_wb_ack_o
 tb_wb.pB_wb_stall_o
 @22
 tb_wb.pB_wb_data_o[31:0]
+@200
+-
+-INTERNAL
+@28
+tb_wb.wb.pA_turn
+tb_wb.wb.pB_turn
+tb_wb.wb.pA_stall
+tb_wb.wb.pA_ack
+tb_wb.wb.pB_stall
+tb_wb.wb.contention
+tb_wb.wb.pA_ack
+tb_wb.wb.pB_ack
+tb_wb.wb.pA_en
+tb_wb.wb.pB_en
+tb_wb.wb.pA_ram
+tb_wb.wb.pB_ram
+tb_wb.wb.pA_turn
+tb_wb.wb.pB_turn
+tb_wb.wb.pA_set_signals
+tb_wb.wb.pB_set_signals
 [pattern_trace] 1
 [pattern_trace] 0
