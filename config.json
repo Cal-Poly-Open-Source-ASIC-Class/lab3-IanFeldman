@@ -1,0 +1,81 @@
+{
+    "FP_SIZING": "absolute",
+    "DIE_AREA": [0, 0, 2000, 2000],
+    "VDD_NETS": [
+        "VPWR"
+    ],
+    "GND_NETS": [
+        "VGND"
+    ],
+    "MACROS": {
+        "modulename": {
+            "instances": {
+                "instance1": {
+                    "location": ["x coord", "y coord"],
+                    "orientation": "N,S,E,W, or flipped: FN, FS, etc."
+                },
+                "instance2": {
+                    "location": [100, 750],
+                    "orientation": "FS"
+                }
+            },
+            "gds": [
+                "dir::path_to/gds/macro.gds"
+            ],
+            "lef": [
+                "dir::path_to/lef/macro.lef"
+            ],
+            "spef": {
+                "max*": [
+                    "dir::path_to/spef/max_/macro.max.spef"
+                ],
+                "min*": [
+                    "dir::path_to/spef/min_/macro.min.spef"
+                ],
+                "nom*": [
+                    "dir::path_to/spef/nom_/macro.nom.spef"
+                ]
+            },
+            "lib": {
+                "*": "dir::path_to/lib/max_ss_100C_1v60/macro__max_ss_100C_1v60.lib"
+            },
+            "nl": [
+                "dir::path_to/nl/macro.nl.v"
+            ],
+            "pnl": [
+                "dir::path_to/pnl/macro.pnl.v"
+            ]
+        }
+    },
+    "PDN_MACRO_CONNECTIONS": [
+        "instance1 VPWR VGND VPWR VGND",
+        "instance2 VPWR VGND VPWR VGND"
+    ],
+    "FP_PDN_VOFFSET": 5,
+    "FP_PDN_HOFFSET": 5,
+    "FP_PDN_VWIDTH": 3.1,
+    "FP_PDN_HWIDTH": 3.1,
+    "FP_PDN_VSPACING": 15.5,
+    "FP_PDN_HSPACING": 15.5,
+    "FP_PDN_VPITCH": 100,
+    "FP_PDN_HPITCH": 100,
+    "FP_PDN_CORE_RING": true,
+    "FP_PDN_CORE_RING_VWIDTH": 3.1,
+    "FP_PDN_CORE_RING_HWIDTH": 3.1,
+    "FP_PDN_CORE_RING_VOFFSET": 12.45,
+    "FP_PDN_CORE_RING_HOFFSET": 12.45,
+    "FP_PDN_CORE_RING_VSPACING": 1.7,
+    "FP_PDN_CORE_RING_HSPACING": 1.7,
+    "PL_RESIZER_ALLOW_SETUP_VIOS": true,
+    "GRT_RESIZER_ALLOW_SETUP_VIOS": true,
+    "GRT_ANTENNA_ITERS": 15,
+    "GRT_ANTENNA_MARGIN": 15,
+    "RUN_HEURISTIC_DIODE_INSERTION": true,
+    "DESIGN_REPAIR_MAX_WIRE_LENGTH": 800,
+    "PL_WIRE_LENGTH_COEF": 0.05,
+    "RUN_POST_GRT_DESIGN_REPAIR": true,
+    "DESIGN_REPAIR_MAX_SLEW_PCT": 30,
+    "DESIGN_REPAIR_MAX_CAP_PCT": 30,
+    "MAX_TRANSITION_CONSTRAINT": 1.5
+}
+
