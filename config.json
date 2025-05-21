@@ -8,48 +8,48 @@
         "VGND"
     ],
     "MACROS": {
-        "modulename": {
+        "DFFRAM256x32": {
             "instances": {
-                "instance1": {
-                    "location": ["x coord", "y coord"],
-                    "orientation": "N,S,E,W, or flipped: FN, FS, etc."
+                "ram_0": {
+                    "location": ["500", "500"],
+                    "orientation": "N"
                 },
-                "instance2": {
-                    "location": [100, 750],
-                    "orientation": "FS"
+                "ram_1": {
+                    "location": [1500, 1500],
+                    "orientation": "N"
                 }
             },
             "gds": [
-                "dir::path_to/gds/macro.gds"
+                "dir::macros/dffram256x32/layout/gds/DFFRAM256x32.gds.gz"
             ],
             "lef": [
-                "dir::path_to/lef/macro.lef"
+                "dir::macros/dffram256x32/layout/lef/DFFRAM256x32.lef"
             ],
             "spef": {
                 "max*": [
-                    "dir::path_to/spef/max_/macro.max.spef"
+                    "dir::macros/dffram256x32/timing/spef/DFFRAM256x32.max.spef"
                 ],
                 "min*": [
-                    "dir::path_to/spef/min_/macro.min.spef"
+                    "dir::macros/dffram256x32/timing/spef/DFFRAM256x32.min.spef"
                 ],
                 "nom*": [
-                    "dir::path_to/spef/nom_/macro.nom.spef"
+                    "dir::macros/dffram256x32/timing/spef/DFFRAM256x32.nom.spef"
                 ]
             },
             "lib": {
-                "*": "dir::path_to/lib/max_ss_100C_1v60/macro__max_ss_100C_1v60.lib"
+                "*": "macros/dffram256x32/timing/pt-etm/DFFRAM256x32/ss/DFFRAM256x32.max.lib"
             },
             "nl": [
-                "dir::path_to/nl/macro.nl.v"
+                "macros/dffram256x32/hdl/gl/DFFRAM256x32.v"
             ],
             "pnl": [
-                "dir::path_to/pnl/macro.pnl.v"
+                "macros/dffram256x32/hdl/gl/DFFRAM256x32.v"
             ]
         }
     },
     "PDN_MACRO_CONNECTIONS": [
-        "instance1 VPWR VGND VPWR VGND",
-        "instance2 VPWR VGND VPWR VGND"
+        "ram_0 VPWR VGND VPWR VGND",
+        "ram_1 VPWR VGND VPWR VGND"
     ],
     "FP_PDN_VOFFSET": 5,
     "FP_PDN_HOFFSET": 5,
