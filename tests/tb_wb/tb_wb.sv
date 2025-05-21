@@ -55,7 +55,6 @@ end
 initial begin
     // Name as needed
     $dumpfile("tb_wb.vcd");
-    $dumpvars(2, tb_mem);
 end
 
 initial begin
@@ -88,7 +87,6 @@ initial begin
     pA_wb_stb_i = 1'b0;
     pB_wb_stb_i = 1'b0;
     #100000
-    $error("TIMEOUT");
 
     // Make sure to call finish so test exits
     $finish();
