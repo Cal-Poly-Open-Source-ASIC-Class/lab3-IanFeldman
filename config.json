@@ -1,7 +1,7 @@
 {
     "DESIGN_NAME": "wishbone",
     "VERILOG_FILES": "dir::rtl/*.sv",
-    "CLOCK_PERIOD": 7,
+    "CLOCK_PERIOD": 300,
     "CLOCK_PORT": "clk",
     "FP_PDN_VOFFSET": 7,
     "FP_PDN_HOFFSET": 7,
@@ -10,7 +10,7 @@
     "RUN_POST_GRT_DESIGN_REPAIR": true,
     "SYNTH_AUTONAME": true,
     "FP_SIZING": "absolute",
-    "DIE_AREA": [0, 0, 2000, 2000],
+    "DIE_AREA": [0, 0, 1500, 2000],
     "VDD_NETS": [
         "VPWR"
     ],
@@ -21,11 +21,11 @@
         "DFFRAM256x32": {
             "instances": {
                 "ram_0": {
-                    "location": ["500", "500"],
+                    "location": [200, 300],
                     "orientation": "N"
                 },
                 "ram_1": {
-                    "location": [1500, 1500],
+                    "location": [200, 1300],
                     "orientation": "N"
                 }
             },
