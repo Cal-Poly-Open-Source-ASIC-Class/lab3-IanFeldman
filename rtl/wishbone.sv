@@ -4,7 +4,7 @@
 
 module wishbone
 (
-    input clk,
+    input clk, reset,
     input pA_wb_cyc_i, pA_wb_stb_i,
     input pB_wb_cyc_i, pB_wb_stb_i,
     input [3:0] pA_wb_we_i, pB_wb_we_i,
@@ -30,6 +30,8 @@ logic contention, temp_ack_a, temp_ack_b;
 logic pA_set_signals, pB_set_signals;
 logic [(`A_WIDTH - 1):0] pA_addr_shifted, pB_addr_shifted;
 logic [(`A_WIDTH_RAM - 1):0] pA_addr_ram, pB_addr_ram;
+
+logic [31:0] temp_do_a, temp_do_b;
 
 /* get ram selection */
 assign pA_addr_shifted = {pA_wb_addr_i >> (`A_WIDTH - 1)};
@@ -84,8 +86,8 @@ always_comb begin
     pA_ack = 1'b0;
     pB_ack = 1'b0;
     /* set data out to zero */
-    pA_wb_data_o = 32'b0;
-    pB_wb_data_o = 32'b0;
+    temp_do_a = 32'b0;
+    temp_do_b = 32'b0;
     /* set stall to 0 */
     pA_stall = 1'b0;
     pB_stall = 1'b0;
@@ -116,7 +118,7 @@ always_comb begin
             en_0 = pA_en & ~pA_stall;
             di_0 = pA_wb_data_i;
             a_0  = pA_addr_ram;
-            pA_wb_data_o = do_0;
+            temp_do_a = do_0;
             /* set ram1 signals low */
             we_1 = 4'b0;
             en_1 = 1'b0;
@@ -129,7 +131,7 @@ always_comb begin
             en_1 = pA_en & ~pA_stall;
             di_1 = pA_wb_data_i;
             a_1  = pA_addr_ram;
-            pA_wb_data_o = do_1;
+            temp_do_a = do_1;
             /* set ram0 signals low */
             we_0 = 4'b0;
             en_0 = 1'b0;
@@ -139,7 +141,7 @@ always_comb begin
         /* set ack high */
         pA_ack = 1'b1;
         pB_ack = 1'b0;
-        pB_wb_data_o = 32'b0;
+        temp_do_b = 32'b0;
     end
     /* port b */
     if (pB_set_signals) begin
@@ -153,7 +155,7 @@ always_comb begin
             en_0 = pB_en & ~pB_stall;
             di_0 = pB_wb_data_i;
             a_0  = pB_addr_ram;
-            pB_wb_data_o = do_0;
+            temp_do_b = do_0;
             /* set ram1 signals low */
             we_1 = 4'b0;
             en_1 = 1'b0;
@@ -166,7 +168,7 @@ always_comb begin
             en_1 = pB_en & ~pB_stall;
             di_1 = pB_wb_data_i;
             a_1  = pB_addr_ram;
-            pB_wb_data_o = do_1;
+            temp_do_b = do_1;
             /* set ram0 signals low */
             we_0 = 4'b0;
             en_0 = 1'b0;
@@ -176,26 +178,36 @@ always_comb begin
         /* set ack high */
         pB_ack = 1'b1;
         pA_ack = 1'b0;
-        pA_wb_data_o = 32'b0;
+        temp_do_a = 32'b0;
     end
 end
 
 always_ff@(negedge clk) begin
-    /* clock in ack */
-    temp_ack_a <= pA_ack;
-    temp_ack_b <= pB_ack;
-    pA_wb_ack_o <= temp_ack_a;
-    pB_wb_ack_o <= temp_ack_b;
-    /* clock in stall */
-    pA_wb_stall_o <= pA_stall;
-    pB_wb_stall_o <= pB_stall;
-    /* update turns */
-    if (pA_en & pB_en) begin
-        pA_turn <= ~pA_turn;
+    /* reset */
+    if (reset == 1'b1) begin
+        pA_turn <= 1'b0;
+        pA_wb_ack_o <= 1'b0;
+        pB_wb_ack_o <= 1'b0;
     end
-    /* default turn to port a */
-    else if (~pA_en & ~pB_en) begin
-        pA_turn <= 1'b1;
+    else begin
+        pA_wb_data_o <= temp_do_a;
+        pB_wb_data_o <= temp_do_b;
+        /* clock in ack */
+        temp_ack_a <= pA_ack;
+        temp_ack_b <= pB_ack;
+        pA_wb_ack_o <= temp_ack_a;
+        pB_wb_ack_o <= temp_ack_b;
+        /* clock in stall */
+        pA_wb_stall_o <= pA_stall;
+        pB_wb_stall_o <= pB_stall;
+        /* update turns */
+        if (pA_en & pB_en) begin
+            pA_turn <= ~pA_turn;
+        end
+        /* default turn to port a */
+        else if (~pA_en & ~pB_en) begin
+            pA_turn <= 1'b1;
+        end
     end
 end
 
