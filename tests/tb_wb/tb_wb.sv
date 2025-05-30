@@ -1,6 +1,8 @@
 `timescale 1ns/1ps
 `define A_WIDTH 9
 
+module tb_wb;
+
 /* power pins */
 `ifdef USE_POWER_PINS
     wire VPWR;
@@ -9,10 +11,8 @@
     assign VGND=0;
 `endif
 
-module tb_wb;
-
 // Declare test variables
-logic clk;
+logic clk, reset;
 logic pA_wb_cyc_i, pA_wb_stb_i;
 logic pB_wb_cyc_i, pB_wb_stb_i;
 logic [3:0] pA_wb_we_i, pB_wb_we_i;
@@ -26,6 +26,7 @@ logic [31:0] pA_wb_data_o, pB_wb_data_o;
 wishbone wb
 (
     .clk(clk),
+    .reset(reset),
     .pA_wb_cyc_i(pA_wb_cyc_i),
     .pA_wb_stb_i(pA_wb_stb_i),
     .pB_wb_cyc_i(pB_wb_cyc_i),
@@ -41,7 +42,11 @@ wishbone wb
     .pB_wb_ack_o(pB_wb_ack_o),
     .pB_wb_stall_o(pB_wb_stall_o),
     .pA_wb_data_o(pA_wb_data_o),
-    .pB_wb_data_o(pB_wb_data_o)
+    .pB_wb_data_o(pB_wb_data_o),
+    `ifdef USE_POWER_PINS
+    .VPWR(VPWR),
+    .VGND(VGND)
+    `endif
 );
 
 // Sample to drive clock
@@ -55,11 +60,21 @@ end
 initial begin
     // Name as needed
     $dumpfile("tb_wb.vcd");
+    $dumpvars(2, tb_wb);
 end
 
 initial begin
     /* init signals */
     clk = 0;
+    reset = 0;
+    #CLK_PERIOD
+    /* reset */
+    reset = 1'b1;
+    #CLK_PERIOD
+    #CLK_PERIOD
+    reset = 1'b0;
+    #CLK_PERIOD
+    #CLK_PERIOD
     /* port a */
     pA_wb_cyc_i = 1'b1;
     pA_wb_stb_i = 1'b0;
@@ -71,17 +86,57 @@ initial begin
     pB_wb_we_i = 4'b0;
     pB_wb_addr_i = `A_WIDTH'b0;
     #CLK_PERIOD
-    /* attempt reading from A */
+    /* attempt writing from A to ram 0 */
+    pA_wb_addr_i = 4;
+    pA_wb_we_i = 4'b1111;
     pA_wb_stb_i = 1'b1;
+    pA_wb_data_i = 37;
+    #CLK_PERIOD
+    /* attempt writing from A to ram 1 */
+    pA_wb_addr_i = -159;
+    pA_wb_we_i = 4'b1111;
+    pA_wb_stb_i = 1'b1;
+    pA_wb_data_i = 16;
+    #CLK_PERIOD
+    /* clear port a */
+    pA_wb_addr_i = 0;
+    pA_wb_we_i = 4'b0;
+    pA_wb_stb_i = 1'b0;
+    /* attempt writing from B to ram 0 */
+    pB_wb_addr_i = 12;
+    pB_wb_we_i = 4'b1111;
+    pB_wb_stb_i = 1'b1;
+    pB_wb_data_i = 19;
+    #CLK_PERIOD
+    /* attempt writing from B to ram 1 */
+    pB_wb_addr_i = -100;
+    pB_wb_we_i = 4'b1111;
+    pB_wb_stb_i = 1'b1;
+    pB_wb_data_i = 224;
+    /* clear port b */
+    pB_wb_addr_i = 0;
+    pB_wb_we_i = 4'b0;
+    pB_wb_stb_i = 1'b0;
+    /* attempt reading from A */
+    pA_wb_addr_i = 4;
+    pA_wb_stb_i = 1'b1;
+    #CLK_PERIOD
+    #CLK_PERIOD
     #CLK_PERIOD
     pA_wb_stb_i = 1'b0;
     /* attempt reading from B */
+    pB_wb_addr_i = -100;
     pB_wb_stb_i = 1'b1;
+    #CLK_PERIOD
+    #CLK_PERIOD
     #CLK_PERIOD
     pB_wb_stb_i = 1'b0;
     /* attempt reading from both */
+    pA_wb_addr_i = -159;
+    pB_wb_addr_i = 12;
     pA_wb_stb_i = 1'b1;
     pB_wb_stb_i = 1'b1;
+    #CLK_PERIOD
     #CLK_PERIOD
     #CLK_PERIOD
     pA_wb_stb_i = 1'b0;
