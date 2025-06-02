@@ -10,7 +10,7 @@
     "RUN_POST_GRT_DESIGN_REPAIR": true,
     "SYNTH_AUTONAME": true,
     "FP_SIZING": "absolute",
-    "DIE_AREA": [0, 0, 1600, 1600],
+    "DIE_AREA": [0, 0, 1600, 1400],
     "VDD_NETS": [
         "VPWR"
     ],
@@ -21,11 +21,11 @@
         "DFFRAM256x32": {
             "instances": {
                 "ram_0": {
-                    "location": [200, 300],
+                    "location": [150, 150],
                     "orientation": "N"
                 },
                 "ram_1": {
-                    "location": [200, 1000],
+                    "location": [150, 850],
                     "orientation": "N"
                 }
             },

@@ -42,7 +42,7 @@ wishbone wb
     .pB_wb_ack_o(pB_wb_ack_o),
     .pB_wb_stall_o(pB_wb_stall_o),
     .pA_wb_data_o(pA_wb_data_o),
-    .pB_wb_data_o(pB_wb_data_o)
+    .pB_wb_data_o(pB_wb_data_o),
     `ifdef USE_POWER_PINS
     .VPWR(VPWR),
     .VGND(VGND)
