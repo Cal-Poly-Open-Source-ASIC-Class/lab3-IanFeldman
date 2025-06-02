@@ -42,7 +42,7 @@ wishbone wb
     .pB_wb_ack_o(pB_wb_ack_o),
     .pB_wb_stall_o(pB_wb_stall_o),
     .pA_wb_data_o(pA_wb_data_o),
-    .pB_wb_data_o(pB_wb_data_o),
+    .pB_wb_data_o(pB_wb_data_o)
     `ifdef USE_POWER_PINS
     .VPWR(VPWR),
     .VGND(VGND)
@@ -65,16 +65,8 @@ end
 
 initial begin
     /* init signals */
-    clk = 0;
-    reset = 0;
-    #CLK_PERIOD
-    /* reset */
+    clk = 1;
     reset = 1'b1;
-    #CLK_PERIOD
-    #CLK_PERIOD
-    reset = 1'b0;
-    #CLK_PERIOD
-    #CLK_PERIOD
     /* port a */
     pA_wb_cyc_i = 1'b1;
     pA_wb_stb_i = 1'b0;
@@ -86,62 +78,63 @@ initial begin
     pB_wb_we_i = 4'b0;
     pB_wb_addr_i = `A_WIDTH'b0;
     #CLK_PERIOD
+    reset = 1'b0;
+
     /* attempt writing from A to ram 0 */
-    pA_wb_addr_i = 4;
-    pA_wb_we_i = 4'b1111;
     pA_wb_stb_i = 1'b1;
+    pA_wb_we_i = 4'b1111;
     pA_wb_data_i = 37;
+    pA_wb_addr_i = 4;
+    #CLK_PERIOD
     #CLK_PERIOD
     /* attempt writing from A to ram 1 */
-    pA_wb_addr_i = -159;
-    pA_wb_we_i = 4'b1111;
-    pA_wb_stb_i = 1'b1;
-    pA_wb_data_i = 16;
+    pA_wb_data_i = 42;
+    pA_wb_addr_i = -4;
     #CLK_PERIOD
-    /* clear port a */
-    pA_wb_addr_i = 0;
-    pA_wb_we_i = 4'b0;
+    #CLK_PERIOD
     pA_wb_stb_i = 1'b0;
+    #CLK_PERIOD
+
     /* attempt writing from B to ram 0 */
-    pB_wb_addr_i = 12;
-    pB_wb_we_i = 4'b1111;
     pB_wb_stb_i = 1'b1;
-    pB_wb_data_i = 19;
+    pB_wb_we_i = 4'b1111;
+    pB_wb_data_i = 50;
+    pB_wb_addr_i = 5;
+    #CLK_PERIOD
     #CLK_PERIOD
     /* attempt writing from B to ram 1 */
-    pB_wb_addr_i = -100;
-    pB_wb_we_i = 4'b1111;
-    pB_wb_stb_i = 1'b1;
-    pB_wb_data_i = 224;
-    /* clear port b */
-    pB_wb_addr_i = 0;
+    pB_wb_data_i = 60;
+    pB_wb_addr_i = -8;
+    #CLK_PERIOD
+    #CLK_PERIOD
+    pB_wb_stb_i = 1'b0;
+    #CLK_PERIOD
+
+    /* both attempt reading from ram 0 */
+    pA_wb_we_i = 4'b0;
     pB_wb_we_i = 4'b0;
-    pB_wb_stb_i = 1'b0;
-    /* attempt reading from A */
     pA_wb_addr_i = 4;
-    pA_wb_stb_i = 1'b1;
-    #CLK_PERIOD
-    #CLK_PERIOD
-    #CLK_PERIOD
-    pA_wb_stb_i = 1'b0;
-    /* attempt reading from B */
-    pB_wb_addr_i = -100;
-    pB_wb_stb_i = 1'b1;
-    #CLK_PERIOD
-    #CLK_PERIOD
-    #CLK_PERIOD
-    pB_wb_stb_i = 1'b0;
-    /* attempt reading from both */
-    pA_wb_addr_i = -159;
-    pB_wb_addr_i = 12;
+    pB_wb_addr_i = 4;
+    pA_wb_data_i = 0;
+    pB_wb_data_i = 0;
     pA_wb_stb_i = 1'b1;
     pB_wb_stb_i = 1'b1;
     #CLK_PERIOD
     #CLK_PERIOD
     #CLK_PERIOD
-    pA_wb_stb_i = 1'b0;
-    pB_wb_stb_i = 1'b0;
-    #100000
+
+    /* both attempt reading from different rams */
+    pA_wb_we_i = 4'b0;
+    pB_wb_we_i = 4'b0;
+    pA_wb_addr_i = 4;
+    pB_wb_addr_i = -4;
+    pA_wb_data_i = 0;
+    pB_wb_data_i = 0;
+    #CLK_PERIOD
+    #CLK_PERIOD
+    #CLK_PERIOD
+    #CLK_PERIOD
+    #CLK_PERIOD
 
     // Make sure to call finish so test exits
     $finish();
